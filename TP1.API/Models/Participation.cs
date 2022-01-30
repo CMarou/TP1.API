@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TP1.API.Models
+﻿namespace TP1.API.Models
 {
     public class Participation
     {
@@ -9,5 +7,6 @@ namespace TP1.API.Models
         public string Nom { get; set; }
         public string Prenom { get; set; }
         public int NombrePlace { get; set; }
+        public bool EstValide { get; set; }
     }   
 }

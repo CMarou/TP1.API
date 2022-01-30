@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
+using TP1.API.Interfaces;
 using TP1.API.Models;
 
 namespace TP1.API.Controllers
@@ -9,11 +9,13 @@ namespace TP1.API.Controllers
     [ApiController]
     public class EvenementsController : ControllerBase
     {
+        private readonly IEvenementsService _evenementsService;
+
         // GET: api/<EvenementsController>
         [HttpGet]
         public ActionResult<IEnumerable<Evenement>> Get()
         {
-            return new List<Evenement>();
+            return Ok(_evenementsService.GetList());
         }
 
         // TODO: Faire un DTO des évenements
@@ -21,29 +23,24 @@ namespace TP1.API.Controllers
         [HttpGet("{id:int}")]
         public ActionResult<Evenement> Get(int id)
         {
-            return new Evenement { 
-                Id = 1, 
-                Titre = "Match Hockey", 
-                AdresseCivique = "123 rue de la Patinoire", 
-                DateDebut = DateTime.Now,
-                DateFin = DateTime.Now.AddHours(2),
-                Description = "Match de hockey Pinguin vs Starfish.",
-                NomOrganisateur = "Bob Lachance",
-                IdVille = 1
-            };
+            var evenement = _evenementsService.GetById(id);
+            return evenement;
         }
 
         // POST api/<EvenementsController>
         [HttpPost]
         public IActionResult Post([FromBody] Evenement evenement)
         {
-            return CreatedAtAction(nameof(Get), new { id = 1 }, null);
+            var nouvelEvenement = _evenementsService.Add(evenement);
+
+            return CreatedAtAction(nameof(Get), new { id = nouvelEvenement.Id }, null);
         }
 
         // PUT api/<EvenementsController>/5
         [HttpPut("{id:int}")]
         public IActionResult Put(int id, [FromBody] Evenement evenement)
         {
+            _ = _evenementsService.Update(id, evenement);
             return NoContent();
         }
 
@@ -51,6 +48,7 @@ namespace TP1.API.Controllers
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
+            _evenementsService.Delete(id);
             return NoContent();
         }
     }
