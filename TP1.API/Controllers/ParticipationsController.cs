@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using TP1.API.Models;
 
@@ -33,14 +35,13 @@ namespace TP1.API.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Participation participation)
         {
-            return CreatedAtAction(nameof(Get), new { id = 1 }, null);
+            return AcceptedAtAction(nameof(Status), new { id = 1 }, null);
         }
 
-        // PUT api/<ParticipationsController>/5
-        [HttpPut("{id:int}")]
-        public IActionResult Put(int id, [FromBody] Participation participation)
+        [HttpGet("{id:int}/statut")]
+        public IActionResult Status(int id)
         {
-            return NoContent();
+            return 1 > 0 ? Ok(new { status = "Validation en attente." }) : SeeOtherAtAction(nameof(Get), new { id });
         }
 
         // DELETE api/<ParticipationsController>/5
@@ -48,6 +49,12 @@ namespace TP1.API.Controllers
         public IActionResult Delete(int id)
         {
             return NoContent();
+        }
+
+        private IActionResult SeeOtherAtAction(string actionName, object routeValues)
+        {
+            Response.Headers.Add("Location", Url.Action(actionName, routeValues));
+            return new StatusCodeResult(StatusCodes.Status303SeeOther);
         }
     }
 }
