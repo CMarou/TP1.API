@@ -21,9 +21,9 @@ namespace TP1.API.Services
                 };
             }
 
-            var (estValide, erreurs) = Valider(ville);
+            var erreurs = Valider(ville);
 
-            if (!estValide)
+            if (erreurs.Any())
             {
                 throw new HttpException
                 {
@@ -115,9 +115,9 @@ namespace TP1.API.Services
             }
 
 
-            var (estValide, erreurs) = Valider(ville);
+            var erreurs = Valider(ville);
 
-            if (!estValide)
+            if (erreurs.Any())
             {
                 throw new HttpException
                 {
@@ -132,24 +132,21 @@ namespace TP1.API.Services
             return villeExistante;
         }
 
-        private (bool estValide, IEnumerable<string> erreurs) Valider(Ville ville)
+        private static List<string> Valider(Ville ville)
         {
             var erreurs = new List<string>();
-            bool estValide = true;
 
             if (string.IsNullOrEmpty(ville.Nom))
             {
                 erreurs.Add("Le nom de la ville ne doit pas être vide.");
-                estValide = false;
             }
 
             if (ville.Region == Region.Aucune)
             {
                 erreurs.Add("La ville doit appartenir à une région. (Ne doit pas être aucune.)");
-                estValide = false;
             }
 
-            return (estValide, erreurs);
+            return erreurs;
         }
     }
 }
