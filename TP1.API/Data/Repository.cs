@@ -14,7 +14,7 @@ namespace TP1.API.Data
         public static ISet<Ville> Villes { get; private set; } = new HashSet<Ville>();
         public static ISet<Categorie> Categories { get; private set; } = new HashSet<Categorie>();
         public static ISet<Evenement> Evenements { get; private set; } = new HashSet<Evenement>();
-        public static ISet<Participation> Participation { get; private set; } = new HashSet<Participation>();
+        public static ISet<Participation> Participations { get; private set; } = new HashSet<Participation>();
         public static ISet<CategorieEvenement> CategorieEvenements { get; private set; } = new HashSet<CategorieEvenement>();
     }
 }

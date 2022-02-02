@@ -26,9 +26,9 @@ namespace TP1.API.Controllers
         }
 
         [HttpGet("{id}/events")]
-        public ActionResult<IEnumerable<Evenement>> GetEvenements(int idVille)
+        public ActionResult<IEnumerable<Evenement>> GetEvenements(int id)
         {
-            var ville =_villesService.GetById(idVille);
+            var ville =_villesService.GetById(id);
             var evenements = _evenementsService.GetList(e => e.IdVille == ville.Id);
             return Ok(evenements);
         }

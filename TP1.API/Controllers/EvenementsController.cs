@@ -26,10 +26,10 @@ namespace TP1.API.Controllers
         }
 
         [HttpGet("{id}/participations")]
-        public ActionResult<IEnumerable<Participation>> GetParticipations(int idEvent)
+        public ActionResult<IEnumerable<Participation>> GetParticipations(int id)
         {
-            var evenement = _evenementsService.GetById(idEvent);
-            var participations = _participationsService.GetList(p => p.IdEvenement == idEvent);
+            var evenement = _evenementsService.GetById(id);
+            var participations = _participationsService.GetList(p => p.IdEvenement == evenement.Id);
             return Ok(participations);
         }
 

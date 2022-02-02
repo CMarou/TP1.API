@@ -8,7 +8,7 @@ namespace TP1.API.Interfaces
     public interface IParticipationsService
     {
         IEnumerable<Participation> GetList();
-        IEnumerable<Participation> GetList(Expression<Func<Participation, bool>> predicat);
+        IEnumerable<Participation> GetList(Func<Participation, bool> predicat);
         Participation GetById(int id);
         Participation Add(Participation participation);
         void Delete(int id);
