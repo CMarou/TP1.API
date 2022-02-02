@@ -10,10 +10,12 @@ namespace TP1.API.Controllers
     public class VillesController : ControllerBase
     {
         private readonly IVillesService _villesService;
+        private readonly IEvenementsService _evenementsService;
 
-        public VillesController(IVillesService villesService)
+        public VillesController(IVillesService villesService, IEvenementsService evenementsService)
         {
             _villesService = villesService;
+            _evenementsService = evenementsService;
         }
 
         // GET: api/<VillesController>
@@ -21,6 +23,14 @@ namespace TP1.API.Controllers
         public ActionResult<IEnumerable<Ville>> Get()
         {
             return Ok(_villesService.GetList());
+        }
+
+        [HttpGet("{id}/events")]
+        public ActionResult<IEnumerable<Evenement>> GetEvenements(int idVille)
+        {
+            var ville =_villesService.GetById(idVille);
+            var evenements = _evenementsService.GetList(e => e.IdVille == ville.Id);
+            return Ok(evenements);
         }
 
         // GET api/<VillesController>/5

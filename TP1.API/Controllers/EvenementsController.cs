@@ -10,12 +10,27 @@ namespace TP1.API.Controllers
     public class EvenementsController : ControllerBase
     {
         private readonly IEvenementsService _evenementsService;
+        private readonly IParticipationsService _participationsService;
+
+        public EvenementsController(IParticipationsService participationsService, IEvenementsService evenementsService)
+        {
+            _participationsService = participationsService;
+            _evenementsService = evenementsService;
+        }
 
         // GET: api/<EvenementsController>
         [HttpGet]
         public ActionResult<IEnumerable<Evenement>> Get()
         {
             return Ok(_evenementsService.GetList());
+        }
+
+        [HttpGet("{id}/participations")]
+        public ActionResult<IEnumerable<Participation>> GetParticipations(int idEvent)
+        {
+            var evenement = _evenementsService.GetById(idEvent);
+            var participations = _participationsService.GetList(p => p.IdEvenement == idEvent);
+            return Ok(participations);
         }
 
         // TODO: Faire un DTO des évenements
