@@ -8,11 +8,11 @@ using TP1.API.Models;
 
 namespace TP1.API.Services
 {
-    public class EvenementsServices : IEvenementsService
+    public class EvenementsService : IEvenementsService
     {
         private readonly IHttpExceptionThrower _exceptionThrower;
 
-        public EvenementsServices(IHttpExceptionThrower exceptionThrower)
+        public EvenementsService(IHttpExceptionThrower exceptionThrower)
         {
             _exceptionThrower = exceptionThrower;
         }

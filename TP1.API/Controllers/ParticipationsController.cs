@@ -6,7 +6,6 @@ using TP1.API.Models;
 
 namespace TP1.API.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class ParticipationsController : ControllerBase
