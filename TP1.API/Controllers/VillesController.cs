@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using TP1.API.Interfaces;
 using TP1.API.Models;
 
@@ -25,10 +26,15 @@ namespace TP1.API.Controllers
             return Ok(_villesService.GetList());
         }
 
-        [HttpGet("{id}/events")]
+        [HttpGet("{id:int}/events")]
         public ActionResult<IEnumerable<Evenement>> GetEvenements(int id)
         {
             var ville =_villesService.GetById(id);
+            if (ville is null)
+            {
+                return NotFound(new { StatusCode = StatusCodes.Status404NotFound, Errors = new[] { "Ville introuvable." } });
+            }
+            
             var evenements = _evenementsService.GetList(e => e.IdVille == ville.Id);
             return Ok(evenements);
         }
@@ -38,6 +44,10 @@ namespace TP1.API.Controllers
         public ActionResult<Ville> Get(int id)
         {
             var ville = _villesService.GetById(id);
+            if (ville is null)
+            {
+                return NotFound(new { StatusCode = StatusCodes.Status404NotFound, Errors = new[] { "Ville introuvable." } });
+            }
             return ville;
         }
 

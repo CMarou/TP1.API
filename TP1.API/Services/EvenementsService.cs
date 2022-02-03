@@ -30,15 +30,6 @@ namespace TP1.API.Services
         public Evenement GetById(int id)
         {
             var evenementExistant = Repository.Evenements.FirstOrDefault(e => e.Id == id);
-
-            if (evenementExistant is null)
-            {
-                _exceptionThrower.ThrowHttpException(
-                    StatusCodes.Status400BadRequest,
-                    "Évènement introuvable"
-                );
-            }
-
             return evenementExistant;
         }
 

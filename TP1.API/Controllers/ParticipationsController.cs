@@ -31,6 +31,10 @@ namespace TP1.API.Controllers
         public ActionResult<Participation> Get(int id)
         {
             var participation = _participationsService.GetById(id);
+            if (participation is null)
+            {
+                return NotFound(new {StatusCode = StatusCodes.Status404NotFound, Errors = new[] { "Participation introuvable." }});
+            }
             return participation;
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using TP1.API.Interfaces;
 using TP1.API.Models;
 
@@ -28,6 +29,10 @@ namespace TP1.API.Controllers
         public ActionResult<Categorie> Get(int id)
         {
             var categorie = _categoriesService.GetById(id);
+            if (categorie is null)
+            {
+                return NotFound(new { StatusCode = StatusCodes.Status404NotFound, Errors = new[] {"Catégorie introuvable."}});
+            }
             return categorie;
         }
 
@@ -38,15 +43,7 @@ namespace TP1.API.Controllers
             var nouvelleCategorie = _categoriesService.Add(categorie);
             return CreatedAtAction(nameof(Get), new { id = nouvelleCategorie.Id }, null);
         }
-        /*
-         * Réponse : 
-         * Headers :
-         * ....
-         * Location : https://localhost:5001/api/categories/{id}
-         * Body:
-         *   ---
-         */
-
+        
         // PUT api/<CategorieController>/5
         [HttpPut("{id:int}")]
         public IActionResult Put(int id, [FromBody] Categorie categorie)

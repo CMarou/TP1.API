@@ -10,7 +10,7 @@ namespace TP1.API.Services
             throw new HttpException
             {
                 StatusCode = statusCode,
-                Errors = erreurs
+                Value = new { StatusCode = statusCode, Errors = erreurs }
             };
         }
     }

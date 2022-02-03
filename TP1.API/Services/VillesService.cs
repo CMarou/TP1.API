@@ -71,15 +71,6 @@ namespace TP1.API.Services
         public Ville GetById(int id)
         {
             var ville = Repository.Villes.FirstOrDefault(v => v.Id == id);
-
-            if (ville is null)
-            {
-                _exceptionThrower.ThrowHttpException(
-                    StatusCodes.Status404NotFound,
-                    "La ville est introuvable."
-                );
-            }
-
             return ville;
         }
 

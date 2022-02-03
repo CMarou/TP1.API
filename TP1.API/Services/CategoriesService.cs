@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TP1.API.Data;
-using TP1.API.Exceptions;
 using TP1.API.Interfaces;
 using TP1.API.Models;
 
@@ -71,15 +70,6 @@ namespace TP1.API.Services
         public Categorie GetById(int id)
         {
             var categorie = Repository.Categories.FirstOrDefault(c => c.Id == id);
-
-            if (categorie is null)
-            {
-                _exceptionThrower.ThrowHttpException(
-                    StatusCodes.Status404NotFound,
-                     "Catégorie introuvable."
-                );
-            }
-
             return categorie;
         }
 

@@ -31,15 +31,6 @@ namespace TP1.API.Services
         public Participation GetById(int id)
         {
             var participation = Repository.Participations.FirstOrDefault(p => p.Id == id);
-
-            if (participation is null)
-            {
-                _exceptionThrower.ThrowHttpException(
-                    StatusCodes.Status404NotFound,
-                    "La participation demandée est introuvable"
-                );
-            }
-
             return participation;
         }
 

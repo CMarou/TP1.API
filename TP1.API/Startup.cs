@@ -46,7 +46,7 @@ namespace TP1.API
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
+        {   
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -54,6 +54,13 @@ namespace TP1.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP1.API v1"));
             }
 
+            app.UseExceptionHandler(app =>
+            {
+                app.Run(async context =>
+                { 
+                    ///
+                });
+            });
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
