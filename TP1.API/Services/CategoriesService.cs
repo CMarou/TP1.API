@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TP1.API.Data;
+using TP1.API.Exceptions;
 using TP1.API.Interfaces;
 using TP1.API.Models;
 
@@ -9,18 +10,11 @@ namespace TP1.API.Services
 {
     public class CategoriesService : ICategoriesService
     {
-        private readonly IHttpExceptionThrower _exceptionThrower;
-
-        public CategoriesService(IHttpExceptionThrower exceptionThrower)
-        {
-            _exceptionThrower = exceptionThrower;
-        }
-
         public Categorie Add(Categorie categorie)
         {
             if (categorie is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "La catégorie ne peut être une valeur nulle."
                 );
@@ -30,7 +24,7 @@ namespace TP1.API.Services
 
             if (erreurs.Any())
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     erreurs.ToArray()
                 );
@@ -48,7 +42,7 @@ namespace TP1.API.Services
 
             if (categorieASupprimer is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status404NotFound,
                      "Catégorie introuvable."
                 );
@@ -58,7 +52,7 @@ namespace TP1.API.Services
 
             if (categorieEstAssocie)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                    StatusCodes.Status400BadRequest,
                    "La catégorie est associée à un évènement et donc ne peut être supprimée."
                );
@@ -82,7 +76,7 @@ namespace TP1.API.Services
         {
             if (categorie is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "La catégorie ne peut être une valeur nulle."
                 );
@@ -90,7 +84,7 @@ namespace TP1.API.Services
 
             if (id != categorie.Id)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "L'identifiant passé en paramètre ne correspond pas à celui de la catégorie à modifier."
                 );
@@ -100,7 +94,7 @@ namespace TP1.API.Services
 
             if (categorieAModifier is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status404NotFound,
                     "Catégorie introuvable."
                 );
@@ -110,7 +104,7 @@ namespace TP1.API.Services
 
             if(erreurs.Any())
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     erreurs.ToArray()
                 );

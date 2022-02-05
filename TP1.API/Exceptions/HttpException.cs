@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace TP1.API.Exceptions
 {
@@ -7,5 +6,15 @@ namespace TP1.API.Exceptions
     {
         public int StatusCode { get; set; }
         public object Value { get; set; }
+
+        public HttpException()
+        {
+        }
+
+        public HttpException(int statusCode, params string[] erreurs)
+        {
+            StatusCode = statusCode;
+            Value = new { Errors = erreurs };
+        }
     }
 }

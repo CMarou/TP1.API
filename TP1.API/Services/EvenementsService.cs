@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using TP1.API.Data;
+using TP1.API.Exceptions;
 using TP1.API.Interfaces;
 using TP1.API.Models;
 
@@ -10,13 +11,6 @@ namespace TP1.API.Services
 {
     public class EvenementsService : IEvenementsService
     {
-        private readonly IHttpExceptionThrower _exceptionThrower;
-
-        public EvenementsService(IHttpExceptionThrower exceptionThrower)
-        {
-            _exceptionThrower = exceptionThrower;
-        }
-
         public IEnumerable<Evenement> GetList()
         {
             return Repository.Evenements;
@@ -35,36 +29,36 @@ namespace TP1.API.Services
 
         public Evenement Add(Evenement evenement)
         {
-           if (evenement is null)
+            if (evenement is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "L'évènement doit être une valeur non nulle."
                 );
             }
 
-           var erreurs = Valider(evenement);
+            var erreurs = Valider(evenement);
 
-           if (erreurs.Any())
-           {
-                _exceptionThrower.ThrowHttpException(
+            if (erreurs.Any())
+            {
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     erreurs.ToArray()
                 );
-           }
+            }
 
-           evenement.Id = Repository.IdSequenceEvenement++;
-           Repository.Evenements.Add(evenement);
+            evenement.Id = Repository.IdSequenceEvenement++;
+            Repository.Evenements.Add(evenement);
+            AjouterCategoriesPourEvenement(evenement);
 
            return evenement;
-
         }
 
         public Evenement Update(int id, Evenement evenement)
         {
             if (evenement is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "L'évènement doit être une valeur non nulle."
                 );
@@ -72,7 +66,7 @@ namespace TP1.API.Services
 
             if (id != evenement.Id)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "L'identifiant passé en paramètre est différent de l'identifiant de la ville passé dans le corps de la requête."
                 );
@@ -82,7 +76,7 @@ namespace TP1.API.Services
 
             if (evenementAModifier is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status404NotFound,
                     "Évènement introuvable"
                 );
@@ -92,7 +86,7 @@ namespace TP1.API.Services
 
             if (erreurs.Any())
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     erreurs.ToArray()
                 );
@@ -117,7 +111,7 @@ namespace TP1.API.Services
 
             if (evenement is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status404NotFound,
                     "L'évènement est introuvable."
                 );
@@ -135,7 +129,37 @@ namespace TP1.API.Services
                 Repository.Participations.Remove(participation);
             }
 
+            SupprimerCategoriesPourEvenement(evenement);
             Repository.Evenements.Remove(evenement);
+        }
+
+        private void AjouterCategoriesPourEvenement(Evenement evenement)
+        {
+            foreach (var categorieId in evenement.CategoriesId)
+            {
+                var categorieEvenement = new CategorieEvenement
+                {
+                    Id = Repository.IdSequenceCategorieEvenement++,
+                    IdCategorie = categorieId,
+                    IdEvenement = evenement.Id
+                };
+                Repository.CategorieEvenements.Add(categorieEvenement);
+            }
+        }
+
+        private void SupprimerCategoriesPourEvenement(Evenement evenement)
+        {
+            foreach (var categorieId in evenement.CategoriesId)
+            {
+                var categorieEvenements = Repository.CategorieEvenements
+                    .Where(ce => ce.IdEvenement == evenement.Id && ce.IdCategorie == categorieId)
+                    .ToList();
+
+                foreach (var categorieEvenement in categorieEvenements)
+                {
+                    Repository.CategorieEvenements.Remove(categorieEvenement);
+                }
+            }
         }
 
         private List<string> Valider(Evenement evenement)

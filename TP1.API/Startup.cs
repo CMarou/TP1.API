@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
+using System.IO;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using TP1.API.Filters;
 using TP1.API.Interfaces;
@@ -23,7 +26,6 @@ namespace TP1.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IHttpExceptionThrower, HttpExceptionThrower>();
             services.AddScoped<IValidationParticipation, SimpleValidationParticipation>();
             services.AddScoped<IVillesService, VillesService>();
             services.AddScoped<IEvenementsService, EvenementsService>();
@@ -40,7 +42,29 @@ namespace TP1.API
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TP1.API", Version = "v1" });
+                c.SwaggerDoc(
+                    "v1", 
+                    new OpenApiInfo 
+                    { 
+                        Title = "TP1.API",
+                        Version = "v1",
+                        Description = "Prout TP1",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Pier-Olivier St-Pierre-Chouinard & Caroline Marissal-Rousseau",
+                            Email = "yolo.swaggins@wow.com",
+                            Url = new Uri("https://github.com/CMarou/TP1.API")
+                        },
+                        License = new OpenApiLicense
+                        {
+                            Name = "MIT"
+                        }
+                    }
+                );
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
         }
 
@@ -54,13 +78,6 @@ namespace TP1.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TP1.API v1"));
             }
 
-            app.UseExceptionHandler(app =>
-            {
-                app.Run(async context =>
-                { 
-                    ///
-                });
-            });
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();

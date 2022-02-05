@@ -11,18 +11,11 @@ namespace TP1.API.Services
 {
     public class VillesService : IVillesService
     {
-        private readonly IHttpExceptionThrower _exceptionThrower;
-
-        public VillesService(IHttpExceptionThrower exceptionThrower)
-        {
-            _exceptionThrower = exceptionThrower;
-        }
-
         public Ville Add(Ville ville)
         {
             if (ville is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "La ville doit être une valeur non nulle." 
                 );
@@ -32,7 +25,7 @@ namespace TP1.API.Services
 
             if (erreurs.Any())
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     erreurs.ToArray()
                 );
@@ -50,7 +43,7 @@ namespace TP1.API.Services
 
             if (ville is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status404NotFound,
                     "La ville est introuvable."
                 );
@@ -59,7 +52,7 @@ namespace TP1.API.Services
             var evenementsAssocies = Repository.Evenements.Where(e => e.IdVille == id);
             if (evenementsAssocies.Any())
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                      "Vous ne pouvez supprimer une ville qui a au moins un évènement associé à elle."
                 );
@@ -83,7 +76,7 @@ namespace TP1.API.Services
         {
             if (ville is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "La ville ne peut être une valeur nulle."
                 );
@@ -91,7 +84,7 @@ namespace TP1.API.Services
 
             if (id != ville.Id)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "L'identifiant passé en paramètre est différent de l'identifiant de la ville passé dans le corps de la requête."
                 );
@@ -101,7 +94,7 @@ namespace TP1.API.Services
 
             if (villeExistante is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                    StatusCodes.Status404NotFound,
                    "La ville est introuvable."
                );
@@ -111,7 +104,7 @@ namespace TP1.API.Services
 
             if (erreurs.Any())
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     erreurs.ToArray()
                 );

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using TP1.API.Data;
+using TP1.API.Exceptions;
 using TP1.API.Interfaces;
 using TP1.API.Models;
 
@@ -11,13 +12,6 @@ namespace TP1.API.Services
 {
     public class ParticipationsService : IParticipationsService
     {
-        private readonly IHttpExceptionThrower _exceptionThrower;
-
-        public ParticipationsService(IHttpExceptionThrower exceptionThrower)
-        {
-            _exceptionThrower = exceptionThrower;
-        }
-
         public IEnumerable<Participation> GetList()
         {
             return Repository.Participations;
@@ -38,7 +32,7 @@ namespace TP1.API.Services
         {
             if (participation is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     "Veuillez remplir les champs obligatoires."
                 );
@@ -48,7 +42,7 @@ namespace TP1.API.Services
 
             if (erreurs.Any())
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status400BadRequest,
                     erreurs.ToArray()
                 );
@@ -66,7 +60,7 @@ namespace TP1.API.Services
 
             if (participation is null)
             {
-                _exceptionThrower.ThrowHttpException(
+                throw new HttpException(
                     StatusCodes.Status404NotFound,
                     "La participation demandée est introuvable"
                 );
@@ -85,7 +79,7 @@ namespace TP1.API.Services
             }
 
             // expression régulière pour matcher les adresses courriel. 
-            var regexEmail = new Regex(@"^[_a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)@[a-zA-Z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,8})$");
+            var regexEmail = new Regex(@"^([a-zA-Z0-9]+)(([-_\.]){1}[a-zA-Z0-9]+)*@([a-z0-9\-]+\.)+[a-z]{2,}$");
 
             if(string.IsNullOrEmpty(participation.AdresseCourriel) || !regexEmail.IsMatch(participation.AdresseCourriel))
             {
@@ -99,7 +93,7 @@ namespace TP1.API.Services
 
             var evenementExiste = Repository.Evenements.Any(e => e.Id == participation.IdEvenement);
 
-            if (evenementExiste)
+            if (!evenementExiste)
             {
                 erreurs.Add("L'évènement dont vous essayer de créer une participation pour n'existe pas.");
             }
