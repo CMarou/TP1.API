@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using TP1.API.Data;
+using TP1.API.Data.Models;
 using TP1.API.Exceptions;
 using TP1.API.Interfaces;
-using TP1.API.Models;
 
 namespace TP1.API.Services
 {

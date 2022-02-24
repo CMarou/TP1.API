@@ -1,5 +1,5 @@
-﻿using TP1.API.Interfaces;
-using TP1.API.Models;
+﻿using TP1.API.Data.Models;
+using TP1.API.Interfaces;
 
 namespace TP1.API.Services
 {

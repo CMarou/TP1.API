@@ -1,4 +1,4 @@
-﻿using TP1.API.Models;
+﻿using TP1.API.Data.Models;
 
 namespace TP1.API.Interfaces
 {

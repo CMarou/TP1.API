@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using TP1.API.Data.Models;
 using TP1.API.Interfaces;
-using TP1.API.Models;
 
 namespace TP1.API.Controllers
 {
