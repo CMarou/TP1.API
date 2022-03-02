@@ -80,9 +80,8 @@ namespace TP1.API.Controllers
             var participation = _participationsService.GetById(id);
 
             _validation.Validate(participation);
-
-            if (participation.EstValide)
-                return SeeOtherAtAction(nameof(Get), new { id });
+            
+            return SeeOtherAtAction(nameof(Get), new { id });
            
             return Ok(new { status = "Validation en attente." });
         }

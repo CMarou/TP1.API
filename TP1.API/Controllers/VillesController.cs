@@ -47,7 +47,7 @@ namespace TP1.API.Controllers
             {
                 return NotFound(new { StatusCode = StatusCodes.Status404NotFound, Errors = new[] { "Ville introuvable." } });
             }
-            var evenements = _evenementsService.GetList(e => e.IdVille == ville.Id);
+            var evenements = _evenementsService.GetList(e => e.Ville.Id == ville.Id);
             return Ok(evenements);
         }
 

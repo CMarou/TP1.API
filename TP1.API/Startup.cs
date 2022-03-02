@@ -8,9 +8,10 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using TP1.API.Data;
 using TP1.API.Filters;
 using TP1.API.Interfaces;
-using TP1.API.Services;
 
 namespace TP1.API
 {
@@ -26,19 +27,17 @@ namespace TP1.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IValidationParticipation, SimpleValidationParticipation>();
-            services.AddScoped<IVillesService, VillesService>();
-            services.AddScoped<IEvenementsService, EvenementsService>();
-            services.AddScoped<ICategoriesService, CategoriesService>();
-            services.AddScoped<IParticipationsService, ParticipationsService>();
-
+            services.AddDbContext<ApplicationContext>(options =>
+            {
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
+            });
+            
             services.AddControllers(options =>
             {
                 options.AllowEmptyInputInBodyModelBinding = true;
                 options.Filters.Add<HttpExceptionActionFilter>();
-            })
-                .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true)
-                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+            }).ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true)
+              .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             services.AddSwaggerGen(c =>
             {

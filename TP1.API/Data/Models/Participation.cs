@@ -7,8 +7,7 @@
         public string Nom { get; set; }
         public string Prenom { get; set; }
         public int NombrePlace { get; set; }
-        public bool EstValide { get; set; }
-        public int IdEvenement { get; set; }
 
+        public Evenement Evenement { get; set; }
     }   
 }

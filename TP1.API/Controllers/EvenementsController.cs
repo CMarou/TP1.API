@@ -27,8 +27,17 @@ namespace TP1.API.Controllers
         /// <returns>Une liste d'évènements.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(List<Evenement>),StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<Evenement>> Get()
+        public ActionResult<IEnumerable<Evenement>> Get(string searchText, int pageIndex = 1, int pageSize = 10)
         {
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                return Ok(_evenementsService.GetList(
+                    e => e.Titre.Contains(searchText) || e.Description.Contains(searchText)), 
+                    pageIndex, 
+                    pageSize
+                );
+            }
+
             return Ok(_evenementsService.GetList());
         }
 
@@ -48,7 +57,7 @@ namespace TP1.API.Controllers
             {
                 return NotFound(new { StatusCode = StatusCodes.Status404NotFound, Errors = new[] {"Évènement introuvable."}});
             }
-            var participations = _participationsService.GetList(p => p.IdEvenement == evenement.Id);
+            var participations = _participationsService.GetList(p => p.Evenement.Id == evenement.Id);
             return Ok(participations);
         }
 
