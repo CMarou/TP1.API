@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using TP1.API.Data.Models;
+using System.Linq.Expressions;
+using TP1.API.DTOs;
 
 namespace TP1.API.Interfaces
 {
     public interface IEvenementsService
     {
-        IEnumerable<Evenement> GetList();
-        IEnumerable<Evenement> GetList(Func<Evenement, bool> predicat);
-        Evenement GetById(int id);
-        Evenement Add(Evenement evenement);
-        Evenement Update(int id, Evenement evenement);
+        IEnumerable<RequeteEvenementDto> GetList(int pageIndex, int pageSize);
+        IEnumerable<RequeteEvenementDto> GetList(Expression<Func<RequeteEvenementDto, bool>> predicate, int pageIndex, int pageSize);
+        IEnumerable<EvenementParticipationDto> GetParticipationsForEvent(int eventId);
+        RequeteEvenementDto GetById(int id);
+        RequeteEvenementDto Add(EnvoiEvenementDto evenement);
+        void Update(int id, RequeteEvenementDto evenement);
         void Delete(int id);
 
     }

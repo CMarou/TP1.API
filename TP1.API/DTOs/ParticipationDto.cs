@@ -7,6 +7,7 @@
         public string Nom { get; set; }
         public string Prenom { get; set; }
         public int Places { get; set; }
+        public int EvenementId { get; set; }
         public string TitreEvenement { get; set; }
     }
 

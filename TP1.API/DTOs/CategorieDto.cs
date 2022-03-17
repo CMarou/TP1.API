@@ -3,6 +3,6 @@
     public class RequeteCategorieDto
     {
         public int Id { get; set; }
-        public int Nom { get; set; }
+        public string Nom { get; set; }
     }
 }

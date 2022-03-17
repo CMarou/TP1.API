@@ -1,30 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using TP1.API.Data.Models;
 
 namespace TP1.API.DTOs
 {
-    public enum Region
-    {
-        Aucune,
-        BasStLaurent,
-        Gaspesie,
-        CapitaleNationale,
-        Monteregie,
-        Estrie,
-        Saguenay,
-        NordDuQuebec,
-        ChaudiereAppalaches,
-        Mauricie,
-        CentreDuQuebec,
-        IleMontreal,
-        Laval,
-        Lanaudiere,
-        Laurentides,
-        Outaouais,
-        Abitibi,
-        CoteNord
-    }
-
     public class RequeteVilleDto
     {
         public int Id { get; set; }

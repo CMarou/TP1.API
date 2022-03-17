@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
-using TP1.API.Data.Models;
+using TP1.API.DTOs;
 
 namespace TP1.API.Interfaces
 {
     public interface IVillesService
     {
-        IEnumerable<Ville> GetList();
-        Ville GetById(int id);
-        Ville Add(Ville ville);
-        Ville Update(int id, Ville ville);
+        IEnumerable<RequeteVilleDto> GetList();
+        IEnumerable<VilleEvenementDto> GetEventsForCity(int id);
+        RequeteVilleDto GetById(int id);
+        RequeteVilleDto Add(EnvoiVilleDto ville);
+        void Update(int id, RequeteVilleDto ville);
         void Delete(int id);
     }
 }

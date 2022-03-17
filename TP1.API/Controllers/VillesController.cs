@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using TP1.API.Data.Models;
+using TP1.API.DTOs;
 using TP1.API.Interfaces;
 
 namespace TP1.API.Controllers
@@ -11,12 +12,10 @@ namespace TP1.API.Controllers
     public class VillesController : ControllerBase
     {
         private readonly IVillesService _villesService;
-        private readonly IEvenementsService _evenementsService;
 
-        public VillesController(IVillesService villesService, IEvenementsService evenementsService)
+        public VillesController(IVillesService villesService)
         {
             _villesService = villesService;
-            _evenementsService = evenementsService;
         }
 
         /// <summary>
@@ -24,8 +23,8 @@ namespace TP1.API.Controllers
         /// </summary>
         /// <returns>Retourne la liste complète des villes.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(List<Ville>), StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<Ville>> Get()
+        [ProducesResponseType(typeof(List<RequeteVilleDto>), StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<RequeteVilleDto>> Get()
         {
             return Ok(_villesService.GetList());
         }
@@ -47,7 +46,8 @@ namespace TP1.API.Controllers
             {
                 return NotFound(new { StatusCode = StatusCodes.Status404NotFound, Errors = new[] { "Ville introuvable." } });
             }
-            var evenements = _evenementsService.GetList(e => e.Ville.Id == ville.Id);
+
+            var evenements = _villesService.GetEventsForCity(id);
             return Ok(evenements);
         }
 
@@ -59,9 +59,9 @@ namespace TP1.API.Controllers
         /// Retourne la ville dont l'identifiant correspond à celui spécifié en paramètre, si elle existe. 
         /// </returns>
         [HttpGet("{id:int}")]
-        [ProducesResponseType(typeof(Ville), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RequeteVilleDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Ville> Get(int id)
+        public ActionResult<RequeteVilleDto> Get(int id)
         {
             var ville = _villesService.GetById(id);
             if (ville is null)
@@ -74,14 +74,14 @@ namespace TP1.API.Controllers
         /// <summary>
         /// Permet la création d'une nouvelle ville.
         /// </summary>
-        /// <param name="categorie">La ville à ajouter.</param>
+        /// <param name="ville">La ville à ajouter.</param>
         /// <returns>
         /// La réponse HTTP de création, ainsi que le lien API permettant d'accéder à la ville nouvellement créée par son identifiant.
         /// </returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post([FromBody] Ville ville)
+        public IActionResult Post([FromBody] EnvoiVilleDto ville)
         {
             var nouvelleVille = _villesService.Add(ville);
             return CreatedAtAction(nameof(Get), new { id = nouvelleVille.Id }, null);
@@ -91,14 +91,15 @@ namespace TP1.API.Controllers
         /// Permet la modification d'une ville préexistante.
         /// </summary>
         /// <param name="id">L'identifiant unique de la ville à modification.</param>
+        /// <param name="ville"></param>
         /// <returns>Une réponse HTTP NoContent, si la modification est réussie.</returns>
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Put(int id, [FromBody] Ville ville)
+        public IActionResult Put(int id, [FromBody] RequeteVilleDto ville)
         {
-            _ = _villesService.Update(id, ville); 
+            _villesService.Update(id, ville); 
             return NoContent();
         }
 
@@ -106,7 +107,6 @@ namespace TP1.API.Controllers
         /// Permet la suppression d'une ville préexistante.
         /// </summary>
         /// <param name="id">L'identifiant unique de la ville à supprimer.</param>
-        /// <param name="categorie">La ville à supprimer.</param>
         /// <returns>Une réponse HTTP NoContent, si la suppression est réussie.</returns>
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

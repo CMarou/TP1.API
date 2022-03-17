@@ -10,8 +10,10 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using TP1.API.Data;
+using TP1.API.Data.Repository;
 using TP1.API.Filters;
 using TP1.API.Interfaces;
+using TP1.API.Services;
 
 namespace TP1.API
 {
@@ -31,6 +33,17 @@ namespace TP1.API
             {
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            services.AddScoped<ICategorieRepository, CategorieRepository>();
+            services.AddScoped<IParticipationRepository, ParticipationRepository>();
+            services.AddScoped<IEvenementRepository, EvenementRepository>();
+            services.AddScoped<IVilleRepository, VilleRepository>();
+
+            services.AddScoped<IValidationParticipation, MockValidationParticipation>();
+            services.AddScoped<IVillesService, VillesService>();
+            services.AddScoped<ICategoriesService, CategoriesService>();
+            services.AddScoped<IEvenementsService, EvenementsService>();
+            services.AddScoped<IParticipationsService, ParticipationsService>();
             
             services.AddControllers(options =>
             {

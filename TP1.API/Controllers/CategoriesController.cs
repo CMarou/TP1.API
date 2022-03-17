@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using TP1.API.Interfaces;
 using System.Net.Mime;
 using TP1.API.Data.Models;
+using TP1.API.DTOs;
 
 namespace TP1.API.Controllers
 {
@@ -24,8 +25,8 @@ namespace TP1.API.Controllers
         /// </summary>
         /// <returns>Retourne la liste complète des catégories.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(List<Categorie>), StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<Categorie>> Get()
+        [ProducesResponseType(typeof(List<RequeteCategorieDto>), StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<RequeteCategorieDto>> Get()
         {
             return Ok(_categoriesService.GetList());
         }
@@ -38,9 +39,9 @@ namespace TP1.API.Controllers
         /// Retourne la catégorie dont l'identifiant correspond à l'identifiant spécifié en paramètre, si elle existe. 
         /// </returns>
         [HttpGet("{id:int}")]
-        [ProducesResponseType(typeof(Categorie), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RequeteCategorieDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Categorie> Get(int id)
+        public ActionResult<RequeteCategorieDto> Get(int id)
         {
             var categorie = _categoriesService.GetById(id);
             if (categorie is null)
@@ -53,16 +54,16 @@ namespace TP1.API.Controllers
         /// <summary>
         /// Permet la création d'une nouvelle catégorie.
         /// </summary>
-        /// <param name="categorie">La catégorie à ajouter.</param>
+        /// <param name="nomCategorie">La catégorie à ajouter.</param>
         /// <returns>
         /// La réponse HTTP de création, ainsi que le lien API permettant d'accéder à la catégorie nouvellement créée par son identifiant.
         /// </returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post([FromBody] Categorie categorie)
+        public IActionResult Post([FromBody] string nomCategorie)
         {
-            var nouvelleCategorie = _categoriesService.Add(categorie);
+            var nouvelleCategorie = _categoriesService.Add(nomCategorie);
             return CreatedAtAction(nameof(Get), new { id = nouvelleCategorie.Id }, null);
         }
 
@@ -76,9 +77,9 @@ namespace TP1.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Put(int id, [FromBody] Categorie categorie)
+        public IActionResult Put(int id, [FromBody] RequeteCategorieDto categorie)
         {
-            _ = _categoriesService.Update(id, categorie);
+            _categoriesService.Update(id, categorie);
             return NoContent();
         }
 

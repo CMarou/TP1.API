@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using TP1.API.Data.Models;
+using TP1.API.DTOs;
 
 namespace TP1.API.Interfaces
 {
     public interface ICategoriesService
     {
-        IEnumerable<Categorie> GetList();
-        Categorie GetById(int id);
-        Categorie Add(Categorie categorie);
-        Categorie Update(int id, Categorie categorie);
+        IEnumerable<RequeteCategorieDto> GetList();
+        RequeteCategorieDto GetById(int id);
+        RequeteCategorieDto Add(string nomCategorie);
+        void Update(int id, RequeteCategorieDto nomCategorie);
         void Delete(int id);
     }
 }

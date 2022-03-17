@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using TP1.API.Interfaces;
 using System.Net.Mime;
-using TP1.API.Data.Models;
+using TP1.API.DTOs;
 
 namespace TP1.API.Controllers
 {
@@ -13,11 +13,9 @@ namespace TP1.API.Controllers
     public class EvenementsController : ControllerBase
     {
         private readonly IEvenementsService _evenementsService;
-        private readonly IParticipationsService _participationsService;
 
-        public EvenementsController(IParticipationsService participationsService, IEvenementsService evenementsService)
+        public EvenementsController(IEvenementsService evenementsService)
         {
-            _participationsService = participationsService;
             _evenementsService = evenementsService;
         }
 
@@ -26,19 +24,19 @@ namespace TP1.API.Controllers
         /// </summary>
         /// <returns>Une liste d'évènements.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(List<Evenement>),StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<Evenement>> Get(string searchText, int pageIndex = 1, int pageSize = 10)
+        [ProducesResponseType(typeof(List<RequeteEvenementDto>),StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<RequeteEvenementDto>> Get(string searchText, int pageIndex = 1, int pageSize = 10)
         {
             if (!string.IsNullOrEmpty(searchText))
             {
                 return Ok(_evenementsService.GetList(
-                    e => e.Titre.Contains(searchText) || e.Description.Contains(searchText)), 
+                    e => e.Titre.Contains(searchText) || e.Description.Contains(searchText), 
                     pageIndex, 
-                    pageSize
+                    pageSize)
                 );
             }
 
-            return Ok(_evenementsService.GetList());
+            return Ok(_evenementsService.GetList(pageIndex, pageSize));
         }
 
         /// <summary>
@@ -48,16 +46,16 @@ namespace TP1.API.Controllers
         /// <param name="id">L'identifiant de l'évènement.</param>
         /// <returns>Une liste de participations.</returns>
         [HttpGet("{id:int}/participations")]
-        [ProducesResponseType(typeof(List<Participation>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<EvenementParticipationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IEnumerable<Participation>> GetParticipations(int id)
+        public ActionResult<IEnumerable<EvenementParticipationDto>> GetParticipations(int id)
         {
             var evenement = _evenementsService.GetById(id);
             if (evenement is null)
             {
                 return NotFound(new { StatusCode = StatusCodes.Status404NotFound, Errors = new[] {"Évènement introuvable."}});
             }
-            var participations = _participationsService.GetList(p => p.Evenement.Id == evenement.Id);
+            var participations = _evenementsService.GetParticipationsForEvent(id);
             return Ok(participations);
         }
 
@@ -67,9 +65,9 @@ namespace TP1.API.Controllers
         /// <param name="id">L'identifiant de l'évènement.</param>
         /// <returns>Retourne la catégorie dont l'identifiant correspond à celui spécifié en paramètre, si il existe.</returns>
         [HttpGet("{id:int}")]
-        [ProducesResponseType(typeof(Evenement), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RequeteEvenementDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Evenement> Get(int id)
+        public ActionResult<RequeteEvenementDto> Get(int id)
         {
             var evenement = _evenementsService.GetById(id);
             if (evenement is null)
@@ -87,7 +85,7 @@ namespace TP1.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post([FromBody] Evenement evenement)
+        public IActionResult Post([FromBody] EnvoiEvenementDto evenement)
         {
             var nouvelEvenement = _evenementsService.Add(evenement);
 
@@ -104,9 +102,9 @@ namespace TP1.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Put(int id, [FromBody] Evenement evenement)
+        public IActionResult Put(int id, [FromBody] RequeteEvenementDto evenement)
         {
-            _ = _evenementsService.Update(id, evenement);
+            _evenementsService.Update(id, evenement);
             return NoContent();
         }
 

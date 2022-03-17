@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using TP1.API.Data.Models;
-
+using TP1.API.DTOs;
 
 namespace TP1.API.Data.Repository
 {
-
     public class VilleRepository : IVilleRepository
     {
         private readonly ApplicationContext _context;
@@ -18,67 +17,116 @@ namespace TP1.API.Data.Repository
             _context = context;
         }
 
-        public IEnumerable<Ville> GetList()
-        {
-            return _context.Villes.AsNoTracking();
-        }
-
-        public IEnumerable<Ville> GetList(Expression<Func<Ville, bool>> predicate)
+        public IEnumerable<RequeteVilleDto> GetList()
         {
             return _context.Villes
                 .AsNoTracking()
+                .Select(v => new RequeteVilleDto 
+                {
+                    Id = v.Id,
+                    Nom = v.Nom,
+                    Region = v.Region,
+                });
+        }
+
+        public IEnumerable<RequeteVilleDto> GetList(Expression<Func<RequeteVilleDto, bool>> predicate)
+        {
+            return _context.Villes
+                .AsNoTracking()
+                .Select(v => new RequeteVilleDto
+                {
+                    Id = v.Id,
+                    Nom = v.Nom,
+                    Region = v.Region,
+                })
                 .Where(predicate);
         }
-
-        public IEnumerable<Ville> GetCitiesByEventCountDescending()
+        
+        public IEnumerable<RequeteVilleDto> GetCitiesByEventCountDescending()
         {
-            var countList = _context.Evenements
-                .AsNoTracking()
-                .Include(e => e.Ville)
-                .GroupBy(e => e.Ville.Id)
-                .Select(g => new { Count = g.Count(), VilleId = g.ElementAt(g.Key).Ville.Id });
-
-            var test = _context.Villes
-                .AsNoTracking()
-                .Join(countList, v => v.Id, c => c.VilleId, x => new { c.Count, v.Id, v.Nom, v.Region })
-                .OrderByDescending(v => v.Count);
-
-            throw new NotImplementedException();
+            return _context.Villes
+                .Select(v => new RequeteVilleDto
+                {
+                    Id = v.Id,
+                    Nom = v.Nom,
+                    Region = v.Region,
+                })
+                .OrderByDescending(v => _context.Evenements.Count(e => e.Ville.Id == v.Id));
         }
 
-        public IEnumerable<Evenement> GetEventsForCity(int cityId)
+        public IEnumerable<VilleEvenementDto> GetEventsForCity(int cityId)
         {
             return _context.Evenements
                 .AsNoTracking()
                 .Include(e => e.Ville)
-                .Where(e => e.Ville.Id == cityId);
+                .Include(e => e.Categories)
+                .Where(e => e.Ville.Id == cityId)
+                .Select(e => new VilleEvenementDto 
+                { 
+                    Id = e.Id,
+                    Titre = e.Titre,
+                    AdresseCivique = e.AdresseCivique,
+                    DateDebut = e.DateDebut,
+                    DateFin = e.DateFin,
+                    NomOrganisateur = e.NomOrganisateur,
+                    Description = e.Description,
+                    Prix = e.Prix,
+                    Categories = e.Categories.Select(c => c.Nom).ToList()
+                });
         }
 
-        public Ville GetById(int id)
+        public RequeteVilleDto GetById(int id)
         {
-            return _context.Villes
+            var ville = _context.Villes
                 .AsNoTracking()
                 .FirstOrDefault(c => c.Id == id);
+
+            if (ville is not null)
+            {
+                return new RequeteVilleDto
+                {
+                    Id = ville.Id,
+                    Nom = ville.Nom,
+                    Region = ville.Region,
+                };
+            }
+
+            return null;
         }
 
-        public void Add(Ville entity)
+        public RequeteVilleDto Add(EnvoiVilleDto ville)
         {
-            _context.Villes.Add(entity);
+            var entite = new Ville
+            {
+                Nom = ville.Nom,
+                Region = ville.Region
+            };
+            
+            _context.Villes.Add(entite);
             _context.SaveChanges();
+
+            return new RequeteVilleDto
+            {
+                Id = entite.Id,
+                Nom = entite.Nom,
+                Region = entite.Region,
+            };
         }
 
-        public void Update(Ville entity)
+        public void Update(RequeteVilleDto ville)
         {
-            _context.Villes.Update(entity);
+            var villeToUpdate = _context.Villes.FirstOrDefault(c => c.Id == ville.Id);
+
+            villeToUpdate.Nom = ville.Nom;
+            villeToUpdate.Region = ville.Region;
+            
+            _context.Villes.Update(villeToUpdate);
             _context.SaveChanges();
         }
 
         public void Delete(int id)
         {
             var entity = _context.Villes.FirstOrDefault(c => c.Id == id);
-
-            if (entity is null)
-                throw new DbUpdateException("Entity to delete was not found.");
 
             _context.Villes.Remove(entity);
             _context.SaveChanges();
